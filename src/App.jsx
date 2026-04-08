@@ -1,11 +1,10 @@
 import React from "react";
+import Body from "./components/Body";
 
 const App = () => {
   return (
     <div>
-      <h1 className="font-bold text-4xl text-red-100 ">
-        Helo, we are building netflixGPT
-      </h1>
+      <Body />
     </div>
   );
 };
