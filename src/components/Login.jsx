@@ -1,8 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Header from "./Header";
-
+import { checkValidateData } from "../utils/validate";
 const Login = () => {
   const [isSignInForm, setisSignInForm] = useState(true);
+  const [errMessage, seterrMessage] = useState(null);
+  const email = useRef(null);
+  const password = useRef(null);
+  const hanldeButtonClick = () => {
+    const message = checkValidateData(
+      email.current.value,
+      password.current.value,
+    );
+    seterrMessage(message);
+  };
   const toggleSignInForm = () => {
     setisSignInForm(!isSignInForm);
   };
@@ -18,7 +28,7 @@ const Login = () => {
       </div>
       <div className="flex justify-center items-center min-h-[80vh]">
         <div className="bg-black/75 w-full rounded-md max-w-md  p-16  text-white ">
-          <form className=" flex flex-col">
+          <form className=" flex flex-col" onSubmit={(e) => e.preventDefault()}>
             <h2 className="text-3xl font-bold mb-6">
               {isSignInForm ? "Sign In" : "Sign Up"}
             </h2>
@@ -30,17 +40,25 @@ const Login = () => {
               />
             )}
             <input
+              ref={email}
               type="text"
               placeholder="Email or phone number"
               className="p-3 my-2 bg-gray-900/50 rounded"
             />
 
             <input
+              ref={password}
               type="password"
               placeholder="Password"
               className="p-3 my-2 bg-gray-900/50 rounded"
             />
-            <button className="bg-red-600 p-2.5 mt-6 mb-2 rounded">
+            <p className="text-red-500 text-sm pt-3 font-semibold">
+              {errMessage}
+            </p>
+            <button
+              className="bg-red-600 p-2.5 mt-6 mb-2 rounded"
+              onClick={hanldeButtonClick}
+            >
               {isSignInForm ? "Sign In" : "Sign Up"}
             </button>
           </form>
