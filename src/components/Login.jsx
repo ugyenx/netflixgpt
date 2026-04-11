@@ -1,17 +1,57 @@
 import React, { useState, useRef } from "react";
 import Header from "./Header";
 import { checkValidateData } from "../utils/validate";
+import { auth } from "../utils/firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 const Login = () => {
   const [isSignInForm, setisSignInForm] = useState(true);
   const [errMessage, seterrMessage] = useState(null);
   const email = useRef(null);
   const password = useRef(null);
+  const name = useRef(null);
   const hanldeButtonClick = () => {
     const message = checkValidateData(
       email.current.value,
       password.current.value,
     );
     seterrMessage(message);
+    if (message) return;
+    if (!isSignInForm) {
+      //sign up
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value,
+      )
+        .then((userCredential) => {
+          const user = userCredential.user;
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(error);
+        });
+    } else {
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value,
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          console.log(user);
+          // ...
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(error);
+        });
+    }
   };
   const toggleSignInForm = () => {
     setisSignInForm(!isSignInForm);
