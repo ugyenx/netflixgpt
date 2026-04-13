@@ -5,8 +5,16 @@ import { auth } from "../utils/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
+
 const Login = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [isSignInForm, setisSignInForm] = useState(true);
   const [errMessage, seterrMessage] = useState(null);
   const email = useRef(null);
@@ -28,11 +36,34 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL:
+              "https://images.stockcake.com/public/2/3/7/23754627-0a14-4855-971d-49de7b8aecfc/intense-anime-portrait-stockcake.jpg",
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(
+                addUser({
+                  uid: uid,
+                  email: email,
+                  displayName: displayName,
+                  photoURL: photoURL,
+                }),
+              );
+              navigate("/browse");
+            })
+            .catch((error) => {
+              seterrMessage(error.message);
+
+              // An error occurred
+              // ...
+            });
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.log(error);
+          seterrMessage(errorMessage);
         });
     } else {
       signInWithEmailAndPassword(
@@ -41,7 +72,10 @@ const Login = () => {
         password.current.value,
       )
         .then((userCredential) => {
+          navigate("/browse");
+
           // Signed in
+
           const user = userCredential.user;
           console.log(user);
           // ...
@@ -49,7 +83,7 @@ const Login = () => {
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
-          console.log(error);
+          seterrMessage(errorMessage);
         });
     }
   };
@@ -66,7 +100,7 @@ const Login = () => {
           alt=""
         />
       </div>
-      <div className="flex justify-center items-center min-h-[80vh]">
+      <div className="flex justify-center items-center min-h-[100vh]">
         <div className="bg-black/75 w-full rounded-md max-w-md  p-16  text-white ">
           <form className=" flex flex-col" onSubmit={(e) => e.preventDefault()}>
             <h2 className="text-3xl font-bold mb-6">
@@ -74,6 +108,7 @@ const Login = () => {
             </h2>
             {!isSignInForm && (
               <input
+                ref={name}
                 type="text"
                 placeholder="Enter your full name"
                 className="p-3 my-2 bg-gray-900/50 rounded"
