@@ -7,12 +7,11 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { USER_AVATAR } from "../utils/constants";
 
 const Login = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [isSignInForm, setisSignInForm] = useState(true);
@@ -38,8 +37,7 @@ const Login = () => {
           const user = userCredential.user;
           updateProfile(user, {
             displayName: name.current.value,
-            photoURL:
-              "https://images.stockcake.com/public/2/3/7/23754627-0a14-4855-971d-49de7b8aecfc/intense-anime-portrait-stockcake.jpg",
+            photoURL: USER_AVATAR,
           })
             .then(() => {
               const { uid, email, displayName, photoURL } = auth.currentUser;
@@ -51,7 +49,6 @@ const Login = () => {
                   photoURL: photoURL,
                 }),
               );
-              navigate("/browse");
             })
             .catch((error) => {
               seterrMessage(error.message);
@@ -72,8 +69,6 @@ const Login = () => {
         password.current.value,
       )
         .then((userCredential) => {
-          navigate("/browse");
-
           // Signed in
 
           const user = userCredential.user;
