@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import MovieCard from "./MovieCard";
+import usePopularMovies from "../hooks/usePopularMovies";
 
 const MovieList = ({ title, movies }) => {
   const scrollRef = useRef(null);
